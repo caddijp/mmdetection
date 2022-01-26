@@ -23,33 +23,27 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Train a detector')
     parser.add_argument('config', help='train config file path')
     parser.add_argument('--work-dir', help='the dir to save logs and models')
-    parser.add_argument(
-        '--resume-from', help='the checkpoint file to resume from')
-    parser.add_argument(
-        '--auto-resume',
-        action='store_true',
-        help='resume from the latest checkpoint automatically')
-    parser.add_argument(
-        '--no-validate',
-        action='store_true',
-        help='whether not to evaluate the checkpoint during training')
+    parser.add_argument('--resume-from', help='the checkpoint file to resume from')
+    parser.add_argument('--auto-resume',
+                        action='store_true',
+                        help='resume from the latest checkpoint automatically')
+    parser.add_argument('--no-validate',
+                        action='store_true',
+                        help='whether not to evaluate the checkpoint during training')
     group_gpus = parser.add_mutually_exclusive_group()
-    group_gpus.add_argument(
-        '--gpus',
-        type=int,
-        help='number of gpus to use '
-        '(only applicable to non-distributed training)')
-    group_gpus.add_argument(
-        '--gpu-ids',
-        type=int,
-        nargs='+',
-        help='ids of gpus to use '
-        '(only applicable to non-distributed training)')
+    group_gpus.add_argument('--gpus',
+                            type=int,
+                            help='number of gpus to use '
+                            '(only applicable to non-distributed training)')
+    group_gpus.add_argument('--gpu-ids',
+                            type=int,
+                            nargs='+',
+                            help='ids of gpus to use '
+                            '(only applicable to non-distributed training)')
     parser.add_argument('--seed', type=int, default=None, help='random seed')
-    parser.add_argument(
-        '--deterministic',
-        action='store_true',
-        help='whether to set deterministic options for CUDNN backend.')
+    parser.add_argument('--deterministic',
+                        action='store_true',
+                        help='whether to set deterministic options for CUDNN backend.')
     parser.add_argument(
         '--options',
         nargs='+',
@@ -67,20 +61,18 @@ def parse_args():
         'It also allows nested list/tuple values, e.g. key="[(a,b),(c,d)]" '
         'Note that the quotation marks are necessary and that no white space '
         'is allowed.')
-    parser.add_argument(
-        '--launcher',
-        choices=['none', 'pytorch', 'slurm', 'mpi'],
-        default='none',
-        help='job launcher')
+    parser.add_argument('--launcher',
+                        choices=['none', 'pytorch', 'slurm', 'mpi'],
+                        default='none',
+                        help='job launcher')
     parser.add_argument('--local_rank', type=int, default=0)
     args = parser.parse_args()
     if 'LOCAL_RANK' not in os.environ:
         os.environ['LOCAL_RANK'] = str(args.local_rank)
 
     if args.options and args.cfg_options:
-        raise ValueError(
-            '--options and --cfg-options cannot be both '
-            'specified, --options is deprecated in favor of --cfg-options')
+        raise ValueError('--options and --cfg-options cannot be both '
+                         'specified, --options is deprecated in favor of --cfg-options')
     if args.options:
         warnings.warn('--options is deprecated in favor of --cfg-options')
         args.cfg_options = args.options
@@ -88,8 +80,7 @@ def parse_args():
     return args
 
 
-def main():
-    args = parse_args()
+def main(args):
 
     cfg = Config.fromfile(args.config)
     if args.cfg_options is not None:
@@ -118,10 +109,9 @@ def main():
     if args.launcher == 'none':
         distributed = False
         if len(cfg.gpu_ids) > 1:
-            warnings.warn(
-                f'We treat {cfg.gpu_ids} as gpu-ids, and reset to '
-                f'{cfg.gpu_ids[0:1]} as gpu-ids to avoid potential error in '
-                'non-distribute training time.')
+            warnings.warn(f'We treat {cfg.gpu_ids} as gpu-ids, and reset to '
+                          f'{cfg.gpu_ids[0:1]} as gpu-ids to avoid potential error in '
+                          'non-distribute training time.')
             cfg.gpu_ids = cfg.gpu_ids[0:1]
     else:
         distributed = True
@@ -146,8 +136,7 @@ def main():
     env_info_dict = collect_env()
     env_info = '\n'.join([(f'{k}: {v}') for k, v in env_info_dict.items()])
     dash_line = '-' * 60 + '\n'
-    logger.info('Environment info:\n' + dash_line + env_info + '\n' +
-                dash_line)
+    logger.info('Environment info:\n' + dash_line + env_info + '\n' + dash_line)
     meta['env_info'] = env_info
     meta['config'] = cfg.pretty_text
     # log some basic info
@@ -163,10 +152,9 @@ def main():
     meta['seed'] = seed
     meta['exp_name'] = osp.basename(args.config)
 
-    model = build_detector(
-        cfg.model,
-        train_cfg=cfg.get('train_cfg'),
-        test_cfg=cfg.get('test_cfg'))
+    model = build_detector(cfg.model,
+                           train_cfg=cfg.get('train_cfg'),
+                           test_cfg=cfg.get('test_cfg'))
     model.init_weights()
 
     datasets = [build_dataset(cfg.data.train)]
@@ -177,20 +165,20 @@ def main():
     if cfg.checkpoint_config is not None:
         # save mmdet version, config file content and class names in
         # checkpoints as meta data
-        cfg.checkpoint_config.meta = dict(
-            mmdet_version=__version__ + get_git_hash()[:7],
-            CLASSES=datasets[0].CLASSES)
+        cfg.checkpoint_config.meta = dict(mmdet_version=__version__ +
+                                          get_git_hash()[:7],
+                                          CLASSES=datasets[0].CLASSES)
     # add an attribute for visualization convenience
     model.CLASSES = datasets[0].CLASSES
-    train_detector(
-        model,
-        datasets,
-        cfg,
-        distributed=distributed,
-        validate=(not args.no_validate),
-        timestamp=timestamp,
-        meta=meta)
+    train_detector(model,
+                   datasets,
+                   cfg,
+                   distributed=distributed,
+                   validate=(not args.no_validate),
+                   timestamp=timestamp,
+                   meta=meta)
 
 
 if __name__ == '__main__':
-    main()
+    args = parse_args()
+    main(args)
