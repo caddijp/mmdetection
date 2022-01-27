@@ -13,28 +13,27 @@ _base_ = "../../mask_rcnn/mask_rcnn_r50_caffe_fpn_mstrain-poly_1x_coco.py"
 model = dict(roi_head=dict(bbox_head=dict(num_classes=1), mask_head=dict(
     num_classes=1)))
 
-img_prefix = "data/bkt-orama-anocci-prod/caddi/fy2022q1-200/"
-ann_train_file = img_prefix + "annots/caddi-fy2022q1-200.json"
-ann_val_file = ann_train_file
+img_prefix = "data/bkt-orama-anocci-prod/caddi/fy2022q1-200/0127/"
 
 # Modify dataset related settings
-dataset_type = "annoci"
+# dataset_type = "annoci"
+dataset_type = "COCODataset"
 classes = ("object",)
 data = dict(
     train=dict(
-        img_prefix=img_prefix + "images/",
+        img_prefix=img_prefix + "train/images/",
         classes=classes,
-        ann_file=ann_train_file,
+        ann_file=img_prefix + "train/annotation.json",
     ),
     val=dict(
-        img_prefix=img_prefix + "images/",
+        img_prefix=img_prefix + "val/images/",
         classes=classes,
-        ann_file=ann_val_file,
+        ann_file=img_prefix + "val/annotation.json",
     ),
     test=dict(
-        img_prefix=img_prefix + "images/",
+        img_prefix=img_prefix + "test/images/",
         classes=classes,
-        ann_file=ann_val_file,
+        ann_file=img_prefix + "test/annotation.json",
     ),
 )
 

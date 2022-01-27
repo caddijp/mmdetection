@@ -15,3 +15,7 @@ train-annoci:
 ## train balloon
 train-balloon:
 	python tools/train.py configs/caddi/experiments/02_coco_balloon.py
+
+## sync to gs
+sync:
+	gsutil -m cp -r 0127 gs://shota-dev/bkt-orama-anocci-prod/caddi/fy2022q1-200/
