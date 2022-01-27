@@ -28,12 +28,12 @@ data = dict(
     val=dict(
         img_prefix=img_prefix + "images/",
         classes=classes,
-        ann_file=img_prefix + "0127/train/annotation.json",
+        ann_file=img_prefix + "0127/val/annotation.json",
     ),
     test=dict(
         img_prefix=img_prefix + "images/",
         classes=classes,
-        ann_file=img_prefix + "0127/train/annotation.json",
+        ann_file=img_prefix + "0127/test/annotation.json",
     ),
 )
 

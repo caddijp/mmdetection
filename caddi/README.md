@@ -2,11 +2,14 @@
 面図認識(object-view)をSSD(object detection)で行うためのrepo.
 
 ## Using
-- Poetry
+- [mmdet](https://github.com/open-mmlab/mmdetection)
 - [caddi-object-detection-tools](https://github.com/caddijp/object-detection-tools)
-- [Kedro](https://github.com/kedro-org/kedro)
-- [Papers with code](https://paperswithcode.com/task/object-detection)
-- [Detectron](https://github.com/facebookresearch/detectron)
-- [mmdet]
 
 ## Start with mmdet
+mmdet は思想として、main repo を fork してその中で作業をするように
+設計されている.
+config, tools 等が学習を行うには不可欠だが、
+パッケージ `mmdet` の中には含まれていないことから類推される.
+
+## Inspiration from
+- [Papers with code](https://paperswithcode.com/task/object-detection)
