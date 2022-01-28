@@ -1,4 +1,5 @@
-.PHONY: link-data get-checkpoints train-annci train-balloon sync
+.PHONY: link-data get-checkpoints train-annci train-balloon sync loss-plots
+.PHONY: topk test sync-work test-leaky
 
 ## link data
 link-data:
@@ -8,19 +9,64 @@ link-data:
 get-checkpoints:
 	wget -P checkpoints https://download.openmmlab.com/mmdetection/v2.0/mask_rcnn/mask_rcnn_r50_caffe_fpn_mstrain-poly_3x_coco/mask_rcnn_r50_caffe_fpn_mstrain-poly_3x_coco_bbox_mAP-0.408__segm_mAP-0.37_20200504_163245-42aa3d00.pth
 
+## train balloon (from tutorial)
+train-balloon:
+	python tools/train.py configs/caddi/experiments/02_coco_balloon.py
+
+## sync working dir to gs
+sync:
+	# gsutil -m cp -r 0127 gs://shota-dev/bkt-orama-anocci-prod/caddi/fy2022q1-200/
+	gsutil -m cp -r "./results " gs://shota-dev/bkt-orama-anocci-prod/caddi/fy2022q1-200/results
+
 ## train annoci (ours)
 train-annoci:
 	# python tools/train.py configs/caddi/experiments/03_annoci.py 	
 	python tools/train.py configs/caddi/experiments/04_annoci_with_split.py
 
-## train balloon (from tutorial)
-train-balloon:
-	python tools/train.py configs/caddi/experiments/02_coco_balloon.py
+## test and get results.pkl
+test:
+	python "./tools/test.py" \
+		"./configs/caddi/experiments/04_annoci_with_split.py" \
+		"./work_dirs/04_annoci_with_split/latest.pth" \
+		--show \
+		--out "./results/04_annoci_with_split/result__latest.pkl"
 
-## sync to gs
-sync:
-	gsutil -m cp -r 0127 gs://shota-dev/bkt-orama-anocci-prod/caddi/fy2022q1-200/
+## make leaky results (to check that train/test/val is working)
+test-leaky:
+	python "./tools/test.py" \
+		"./configs/caddi/experiments/05_annoci_with_split_check_no_leak.py" \
+		"./work_dirs/04_annoci_with_split/latest.pth" \
+		--show \
+		--out "./results/05_annoci_with_split_check_no_leak/result__latest.pkl"
 
+## make loss plots
+loss-plots:
+	python tools/analysis_tools/analyze_logs.py plot_curve \
+		work_dirs/04_annoci_with_split/20220127_104043.log.json \
+		--keys loss_cls loss_bbox \
+		--out outputs/losses.png
+
+## result analysis (topk best and worst results)
+topk:
+	python "./tools/analysis_tools/analyze_results.py" \
+		"./configs/caddi/experiments/04_annoci_with_split.py" \
+		"./results/04_annoci_with_split/result__latest.pkl" \
+		"./results/04_annoci_with_split/topk" \
+    	--show
+
+## result analysis (leaky one)
+topk-leaky:
+	python "./tools/analysis_tools/analyze_results.py" \
+		"./configs/caddi/experiments/05_annoci_with_split_check_no_leak.py" \
+		"./results/05_annoci_with_split_check_no_leak/result__latest.pkl" \
+		"./results/05_annoci_with_split_check_no_leak/topk" \
+    	--show
+
+.PHONY: browse
+## browse dataset
+browse:
+	python tools/misc/browse_dataset.py \
+		"./configs/caddi/experiments/04_annoci_with_split.py"
 
 ############################################################################
 # Self Documenting Commands     
