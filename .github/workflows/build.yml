@@ -48,9 +48,9 @@ jobs:
             torchvision: 0.10.0
             mmcv: 1.9.0
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@e9aba2c848f5ebd159c070c61ea2c4e2b122355e # v2.3.4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install Pillow
@@ -109,9 +109,9 @@ jobs:
             mmcv: 1.8.0
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@e9aba2c848f5ebd159c070c61ea2c4e2b122355e # v2.3.4
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install system dependencies
@@ -147,7 +147,7 @@ jobs:
           coverage xml
           coverage report -m
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v1.0.10
+        uses: codecov/codecov-action@f3570723ef743f6942b6a480461ed0cd6c0f9baa # v1.0.10
         with:
           file: ./coverage.xml
           flags: unittests
@@ -171,9 +171,9 @@ jobs:
             mmcv: 1.9.0
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2.7.0
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@e9aba2c848f5ebd159c070c61ea2c4e2b122355e # v2.3.4
         with:
           python-version: ${{ matrix.python-version }}
       # Add ppa source repo for python3.9.
@@ -220,7 +220,7 @@ jobs:
           coverage xml
           coverage report -m
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
+        uses: codecov/codecov-action@f32b3a3741e1053eb607407145bc9619351dc93b # v2.1.0
         with:
           files: ./coverage.xml
           flags: unittests
